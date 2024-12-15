@@ -32,11 +32,13 @@ passport.use(
     },
     async (token, tokenSecret, profile, done) => {
       try {
-        // Check if user already exists
+        console.log('OAuth token:', token);
+        console.log('OAuth tokenSecret:', tokenSecret);
+        console.log('User profile:', profile);
+
         let user = await User.findOne({ twitterId: profile.id });
 
         if (!user) {
-          // If not, create a new user
           user = await User.create({
             twitterId: profile.id,
             name: profile.displayName,
@@ -47,7 +49,7 @@ passport.use(
           });
         }
 
-        // Fetch the user's followers
+        // Fetch followers after user is created or found
         const headers = {
           Authorization: `OAuth oauth_consumer_key="${process.env.TWITTER_API_KEY}", oauth_token="${token}", oauth_signature_method="HMAC-SHA1"`,
         };
@@ -57,18 +59,19 @@ passport.use(
           headers,
         });
 
-        // Save the followers list to the user document
-        user.followers = followersResponse.data.users; // Store the followers
-        await user.save(); // Save the user with the followers
+        user.followers = followersResponse.data.users;
+        await user.save();
 
+        console.log('User after saving:', user);
         return done(null, user);
       } catch (error) {
-        console.error(error);
+        console.error('Error in TwitterStrategy:', error);
         return done(error, null);
       }
     }
   )
 );
+
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
