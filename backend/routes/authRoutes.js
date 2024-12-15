@@ -18,11 +18,12 @@ router.get(
 router.get('/followers', (req, res) => {
   if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
 
-  const { token, tokenSecret } = req.user;
+  // Get the user's followers from the database
+  const user = req.user;
 
-  const headers = {
-    Authorization: `OAuth oauth_consumer_key="${process.env.TWITTER_API_KEY}", oauth_token="${token}", oauth_signature_method="HMAC-SHA1"`,
-  };
+  // Return the followers from the database
+  res.json(user.followers);
+});
 
   axios
     .get('https://api.twitter.com/1.1/followers/list.json', {

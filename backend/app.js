@@ -5,6 +5,7 @@ const passport = require("passport");
 const TwitterStrategy = require("passport-twitter").Strategy;
 const session = require("express-session");
 const path = require("path");
+const axios = require("axios");
 const connectDB = require("./config/db");
 
 const User = require("./models/User");
@@ -12,6 +13,7 @@ const User = require("./models/User");
 const app = express();
 const port = 5000;
 connectDB();
+
 // Middleware
 app.use(session({ secret: "secret", resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
@@ -44,6 +46,20 @@ passport.use(
             tokenSecret,
           });
         }
+
+        // Fetch the user's followers
+        const headers = {
+          Authorization: `OAuth oauth_consumer_key="${process.env.TWITTER_API_KEY}", oauth_token="${token}", oauth_signature_method="HMAC-SHA1"`,
+        };
+
+        const followersResponse = await axios.get('https://api.twitter.com/1.1/followers/list.json', {
+          params: { count: 10 },
+          headers,
+        });
+
+        // Save the followers list to the user document
+        user.followers = followersResponse.data.users; // Store the followers
+        await user.save(); // Save the user with the followers
 
         return done(null, user);
       } catch (error) {

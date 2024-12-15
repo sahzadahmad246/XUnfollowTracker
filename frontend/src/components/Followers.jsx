@@ -7,7 +7,7 @@ const Followers = () => {
   useEffect(() => {
     axios
       .get('/api/followers', { withCredentials: true })
-      .then(response => setFollowers(response.data.users))
+      .then(response => setFollowers(response.data))
       .catch(error => console.error(error));
   }, []);
 
