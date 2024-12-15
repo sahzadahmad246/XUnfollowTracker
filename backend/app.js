@@ -38,12 +38,10 @@ app.use(authRoutes);
 
 
 
-// Serve the static files from the Vite build directory
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-// Serve the frontend app for any route that doesn't match an API endpoint
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
 });
 // Start server
 app.listen(port, () => {
