@@ -4,20 +4,21 @@ const passport = require('passport');
 const TwitterStrategy = require('passport-twitter').Strategy;
 const session = require('express-session');
 const path = require("path");
-const axios = require('axios');
+
 dotenv.config({ path: "backend/config/config.env" });
 
 const app = express();
 const port = 5000;
 
+// Middleware
 app.use(session({ secret: 'secret', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Passport configuration
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((obj, done) => done(null, obj));
 
-// Twitter OAuth Strategy
 passport.use(
   new TwitterStrategy(
     {
@@ -36,13 +37,12 @@ passport.use(
 const authRoutes = require('./routes/authRoutes');
 app.use("/api", authRoutes);
 
-
-
+// Serve frontend
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
 });
+
 // Start server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
