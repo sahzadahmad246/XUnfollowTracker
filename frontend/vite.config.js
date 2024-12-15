@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": "http://localhost:5000",
+      "/local-api": "http://localhost:5000",
+      prod: "https://xunfollowtracker.onrender.com",
     },
   },
 });

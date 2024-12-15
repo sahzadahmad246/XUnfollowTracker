@@ -34,7 +34,7 @@ passport.use(
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
-app.use(authRoutes);
+app.use("/api", authRoutes);
 
 
 
