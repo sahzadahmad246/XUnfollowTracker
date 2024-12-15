@@ -15,9 +15,19 @@ const port = 5000;
 connectDB();
 
 // Middleware
-app.use(session({ secret: "secret", resave: false, saveUninitialized: true }));
+
+
+app.use(
+  session({
+    secret: 'secret', // Your secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false, httpOnly: true, maxAge: 60000 },
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
+
 
 // Passport configuration
 passport.serializeUser((user, done) => done(null, user));
