@@ -17,7 +17,7 @@ connectDB();
 // Middleware
 app.use(
   session({
-    secret: 'secret', // Your secret key
+    secret:process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false, httpOnly: true, maxAge: 60000 },
@@ -27,8 +27,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Passport configuration
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((obj, done) => done(null, obj));
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});
 
 passport.use(
   new TwitterStrategy(
@@ -58,7 +65,7 @@ passport.use(
 
         // Fetch followers after user is created or found
         const headers = {
-          Authorization: `Bearer ${token}`,
+          Authorization: `OAuth oauth_consumer_key="${process.env.TWITTER_API_KEY}", oauth_token="${token}", oauth_signature_method="HMAC-SHA1"`,
         };
 
         const followersResponse = await axios.get('https://api.twitter.com/1.1/followers/list.json', {
