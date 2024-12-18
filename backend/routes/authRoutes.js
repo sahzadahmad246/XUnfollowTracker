@@ -11,6 +11,9 @@ router.get(
   "/auth/twitter/callback",
   passport.authenticate("twitter", { failureRedirect: "/" }),
   (req, res) => {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
     res.redirect("/followers"); // Redirect to followers page after successful login
   }
 );
