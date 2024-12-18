@@ -15,8 +15,6 @@ const port = 5000;
 connectDB();
 
 // Middleware
-
-
 app.use(
   session({
     secret: 'secret', // Your secret key
@@ -27,7 +25,6 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 // Passport configuration
 passport.serializeUser((user, done) => done(null, user));
@@ -61,7 +58,7 @@ passport.use(
 
         // Fetch followers after user is created or found
         const headers = {
-          Authorization: `OAuth oauth_consumer_key="${process.env.TWITTER_API_KEY}", oauth_token="${token}", oauth_signature_method="HMAC-SHA1"`,
+          Authorization: `Bearer ${token}`,
         };
 
         const followersResponse = await axios.get('https://api.twitter.com/1.1/followers/list.json', {
@@ -81,7 +78,6 @@ passport.use(
     }
   )
 );
-
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
