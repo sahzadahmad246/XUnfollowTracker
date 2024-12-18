@@ -17,7 +17,7 @@ connectDB();
 // Middleware
 app.use(
   session({
-    secret:process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false, httpOnly: true, maxAge: 60000 },
@@ -65,7 +65,7 @@ passport.use(
 
         // Fetch followers after user is created or found
         const headers = {
-          Authorization: `OAuth oauth_consumer_key="${process.env.TWITTER_API_KEY}", oauth_token="${token}", oauth_signature_method="HMAC-SHA1"`,
+          Authorization: `OAuth oauth_consumer_key="${process.env.TWITTER_API_KEY}", oauth_token="${token}", oauth_signature_method="HMAC-SHA1", oauth_timestamp="${Math.floor(Date.now() / 1000)}", oauth_nonce="${Math.random().toString(36).substring(7)}", oauth_version="1.0", oauth_signature="${tokenSecret}"`,
         };
 
         const followersResponse = await axios.get('https://api.twitter.com/1.1/followers/list.json', {
