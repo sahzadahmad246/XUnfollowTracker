@@ -20,7 +20,11 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true, httpOnly: true, maxAge: 60000 },
+    cookie: { 
+      secure: process.env.NODE_ENV === 'production', 
+      httpOnly: true, 
+      maxAge: 60000 
+    },
   })
 );
 app.use(passport.initialize());
@@ -71,6 +75,9 @@ passport.use(
         const followersResponse = await axios.get('https://api.twitter.com/1.1/followers/list.json', {
           params: { count: 10 },
           headers,
+        }).catch(error => {
+          console.error('Error fetching followers:', error.response ? error.response.data : error.message);
+          return done(error, null);
         });
 
         user.followers = followersResponse.data.users;

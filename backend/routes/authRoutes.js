@@ -11,6 +11,7 @@ router.get(
   "/auth/twitter/callback",
   passport.authenticate("twitter", { failureRedirect: "/" }),
   (req, res) => {
+    console.log('User after authentication:', req.user); // Log the user after authentication
     if (!req.user) {
       return res.status(401).json({ error: "Unauthorized" });
     }
